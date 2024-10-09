@@ -1,0 +1,78 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.Connection" %>
+<%@ page import="java.sql.PreparedStatement" %>
+<%@ page import="java.sql.ResultSet" %>
+<%@ page import="java.sql.SQLException" %>
+<%@ page import="com.example.registration.DatabaseUtil" %> <!-- Import your DatabaseUtil class -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Activities</title>
+    <link rel="stylesheet" type="text/css" href="css/styles.css"> <!-- Link to CSS -->
+</head>
+<body>
+    <h1>Available Activities</h1>
+
+    <!-- Form to add a new activity -->
+    <h2>Add Extracurricular Activity</h2>
+    <form action="activities" method="post">
+        <input type="text" name="name" placeholder="Activity Name" required>
+        <textarea name="description" placeholder="Description"></textarea>
+        <input type="date" name="start_date" required>
+        <input type="date" name="end_date" required>
+        <input type="text" name="location" placeholder="Location" required>
+        <input type="number" name="max_participants" placeholder="Max Participants" required>
+        <button type="submit">Add Activity</button>
+    </form>
+
+    <!-- Display activities from the database -->
+    <h2>Current Activities</h2>
+    <div id="activities-list">
+        <%
+            // Sample code to fetch and display activities from the database
+            // This would typically be done in a servlet, but here’s a placeholder
+            try {
+                Connection connection = DatabaseUtil.getConnection();
+                String sql = "SELECT * FROM Activities"; // Assuming an Activities table
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                while (resultSet.next()) {
+                    String activityName = resultSet.getString("name");
+                    String description = resultSet.getString("description");
+                    String startDate = resultSet.getString("start_date");
+                    String endDate = resultSet.getString("end_date");
+                    String location = resultSet.getString("location");
+                    int maxParticipants = resultSet.getInt("max_participants");
+
+                    out.println("<div class='activity'>");
+                    out.println("<h3>" + activityName + "</h3>");
+                    out.println("<p>Description: " + description + "</p>");
+                    out.println("<p>Start Date: " + startDate + "</p>");
+                    out.println("<p>End Date: " + endDate + "</p>");
+                    out.println("<p>Location: " + location + "</p>");
+                    out.println("<p>Max Participants: " + maxParticipants + "</p>");
+                    out.println("</div>");
+                }
+
+                resultSet.close();
+                preparedStatement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                out.println("<p>Error retrieving activities.</p>");
+            }
+        %>
+    </div>
+
+    <!-- Navigation Links -->
+    <nav>
+        <a href="login.jsp">Login</a>
+        <a href="signup.jsp">Sign Up</a>
+        <a href="participation_history.jsp">Participation History</a>
+        <a href="notifications.jsp">Notifications</a>
+    </nav>
+</body>
+</html>
